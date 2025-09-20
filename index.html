@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossaire des Termes Islamiques</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-start: #fdfbf8; /* A very light, warm off-white */
+            --bg-mid: #fbf8f3; /* A soft, sandy beige */
+            --bg-end: #ffffff;
+            --text-primary: #312e2b; /* A deep, warm charcoal */
+            --text-secondary: #6b6660; /* A softer, warm gray */
+            --text-title: #b48f5a; /* A muted, sophisticated gold/ochre */
+            --accent: #cda776; /* A slightly brighter gold for highlights */
+            --accent-dark: #b48f5a;
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-color: rgba(180, 143, 90, 0.1); /* Shadow based on the accent color */
+            --scroll-track: #fbf8f3;
+            --scroll-thumb: #d9b88a;
+            --scroll-thumb-hover: #b48f5a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(165deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+            background-size: 200% 200%;
+            animation: gradientBG 20s ease infinite;
+            color: var(--text-primary);
+            transition: background 0.5s ease;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .arabic-term { font-family: 'Amiri', serif; color: var(--text-secondary); }
+        .title-text { color: var(--text-title); }
+        .secondary-text { color: var(--text-secondary); }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .search-bar-wrapper.glass-card { background: var(--glass-bg); }
+
+        .term-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 25px 50px -12px var(--shadow-color), 0 0 0 1px var(--accent);
+            border-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scroll-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 10px; border: 2px solid var(--scroll-track); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fade-in { animation: fadeIn 1s ease-out forwards; }
+        .slide-up { animation: slideUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; opacity: 0; }
+        
+        .term-card {
+            opacity: 0;
+            animation: slideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        
+        #back-to-top {
+            display: none; opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl min-h-screen">
+
+        <header class="relative text-center mb-10 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold title-text mb-2" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.05);">Glossaire Islamique</h1>
+            <p class="text-lg secondary-text">Explorez les termes clés de l'Islam (Ahl as-Sunnah wa'l-Jamā'ah)</p>
+        </header>
+
+        <div class="mb-8 sticky top-4 z-10 slide-up" style="animation-delay: 0.1s;">
+            <div class="relative search-bar-wrapper glass-card rounded-2xl shadow-xl">
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none"><svg class="h-5 w-5 secondary-text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></div>
+                <input type="text" id="searchInput" placeholder="Rechercher (ex: Tawakkul, Fiqh...)" class="w-full p-4 pl-14 bg-transparent border-none rounded-2xl focus:ring-2 focus:ring-inset focus:ring-[var(--accent)] text-lg transition-shadow duration-300">
+            </div>
+        </div>
+        
+        <div id="alphabet-filter" class="flex flex-wrap justify-center gap-2 mb-12 slide-up" style="animation-delay: 0.2s;"></div>
+
+        <main id="glossary-grid" class="space-y-5"></main>
+
+        <div id="no-results" class="hidden text-center py-16">
+            <p class="text-2xl secondary-text">Aucun terme trouvé.</p>
+        </div>
+    </div>
+    
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-[var(--accent-dark)] hover:bg-[var(--accent)] text-white p-3 rounded-full shadow-2xl transition-all transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[var(--accent)] focus:ring-opacity-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+    </button>
+
+    <script>
+        const glossaryTerms = [
+             { term: "عقيدة", transliteration: "Aqeedah", definition: "La croyance islamique, le credo. C'est l'ensemble des articles de foi auxquels un musulman doit croire, basés sur le Coran et la Sunnah." },
+            { term: "الله", transliteration: "Allah", definition: "Le nom propre de Dieu en arabe. Le seul et unique Dieu, créateur de l'univers, sans associé ni égal." },
+            { term: "بركة", transliteration: "Barakah", definition: "Bénédiction divine, croissance, augmentation. C'est une force spirituelle positive qui peut être présente dans les personnes, les lieux ou les objets." },
+            { term: "دعاء", transliteration: "Du'a", definition: "Supplication, invocation. C'est l'acte de s'adresser à Allah pour demander Son aide, Son pardon ou Ses faveurs." },
+            { term: "دنيا", transliteration: "Dunya", definition: "Ce bas-monde, la vie terrestre. Désigne la vie matérielle et temporelle par opposition à l'au-delà (Akhirah)." },
+            { term: "فقه", transliteration: "Fiqh", definition: "La jurisprudence islamique. C'est la science qui déduit les lois pratiques de l'Islam à partir de leurs sources détaillées (Coran, Sunnah, etc.)." },
+            { term: "فطرة", transliteration: "Fitra", definition: "La disposition naturelle et innée de l'être humain à reconnaître l'existence d'un Créateur unique (Allah)." },
+            { term: "حديث", transliteration: "Hadith", definition: "Une parole, un acte, une approbation tacite ou une description du Prophète Muhammad (ﷺ). C'est la deuxième source de la loi islamique après le Coran." },
+            { term: "حج", transliteration: "Hajj", definition: "Le pèlerinage à La Mecque, l'un des cinq piliers de l'Islam. Obligatoire une fois dans la vie pour tout musulman qui en a les moyens." },
+            { term: "حلال", transliteration: "Halal", definition: "Ce qui est licite, permis par la loi islamique. S'applique à la nourriture, aux boissons, aux actions et aux revenus." },
+            { term: "حرام", transliteration: "Haram", definition: "Ce qui est illicite, interdit par la loi islamique. Le commettre est un péché." },
+            { term: "إحسان", transliteration: "Ihsan", definition: "L'excellence dans l'adoration. C'est adorer Allah comme si on Le voyait, car même si on ne Le voit pas, Lui nous voit." },
+            { term: "إيمان", transliteration: "Iman", definition: "La foi, la croyance ferme dans les articles de la foi islamique. Elle réside dans le cœur, est affirmée par la langue et prouvée par les actes." },
+            { term: "إسلام", transliteration: "Islam", definition: "Soumission à la volonté d'Allah. Le nom de la religion révélée au Prophète Muhammad (ﷺ)." },
+            { term: "جنة", transliteration: "Jannah", definition: "Le Paradis, le Jardin. La demeure éternelle promise aux croyants dans l'au-delà, remplie de délices et de bonheur." },
+            { term: "جهنم", transliteration: "Jahannam", definition: "L'Enfer. Le lieu du châtiment éternel pour les mécréants et les pécheurs qui n'ont pas été pardonnés." },
+            { term: "جهاد", transliteration: "Jihad", definition: "Lutte, effort. Peut désigner la lutte intérieure contre ses passions (le plus grand jihad) ou la lutte armée pour défendre l'Islam." },
+            { term: "كافر", transliteration: "Kafir", definition: "Mécréant, celui qui refuse de croire en Allah et au message de l'Islam." },
+            { term: "قرآن", transliteration: "Qur'an (Coran)", definition: "La parole d'Allah révélée au Prophète Muhammad (ﷺ) par l'intermédiaire de l'ange Gabriel. La source première de la législation islamique." },
+            { term: "قيامة", transliteration: "Qiyamah", definition: "La Résurrection. Le jour où tous les êtres humains seront ressuscités pour être jugés par Allah." },
+            { term: "رب", transliteration: "Rabb", definition: "Seigneur, Maître, Soutien. Un des noms d'Allah qui souligne Sa souveraineté et Sa providence." },
+            { term: "صبر", transliteration: "Sabr", definition: "Patience, endurance, constance face aux épreuves, aux difficultés et aux tentations." },
+            { term: "صدقة", transliteration: "Sadaqah", definition: "Aumône volontaire, charité. Tout acte de bienfaisance fait pour plaire à Allah." },
+            { term: "صلاة", transliteration: "Salah", definition: "La prière rituelle, l'un des cinq piliers de l'Islam. Effectuée cinq fois par jour en direction de la Kaaba à La Mecque." },
+            { term: "صوم", transliteration: "Sawm", definition: "Le jeûne, en particulier durant le mois de Ramadan. S'abstenir de manger, de boire et d'avoir des relations sexuelles de l'aube au coucher du soleil." },
+            { term: "شهادة", transliteration: "Shahada", definition: "L'attestation de foi : 'Il n'y a de divinité digne d'adoration qu'Allah, et Muhammad est Son messager'. Le premier pilier de l'Islam." },
+            { term: "شيطان", transliteration: "Shaytan", definition: "Satan, le diable. Une créature (un djinn) qui incite les humains à désobéir à Allah." },
+            { term: "شرك", transliteration: "Shirk", definition: "Le polythéisme, l'associationnisme. Le plus grand péché en Islam, qui consiste à associer d'autres divinités ou partenaires à Allah dans Son adoration ou Ses attributs." },
+            { term: "سنة", transliteration: "Sunnah", definition: "La voie, la pratique du Prophète Muhammad (ﷺ). Comprend ses paroles, ses actes et ses approbations. Une source de législation." },
+            { term: "سورة", transliteration: "Surah", definition: "Un chapitre du Coran. Le Coran est composé de 114 sourates de longueurs variables." },
+            { term: "تقوى", transliteration: "Taqwa", definition: "La piété, la crainte révérencielle d'Allah. C'est la conscience de la présence d'Allah qui pousse à Lui obéir et à éviter Sa désobéissance." },
+            { term: "توكل", transliteration: "Tawakkul", definition: "La confiance totale en Allah. C'est le fait de s'en remettre à Lui pour toutes ses affaires après avoir fait les efforts nécessaires (les causes)." },
+            { term: "توحيد", transliteration: "Tawheed", definition: "Le monothéisme pur, l'unicité d'Allah. C'est le concept central de l'Islam, affirmant qu'Allah est Un dans Sa seigneurie, Son adoration et Ses noms et attributs." },
+            { term: "أمة", transliteration: "Ummah", definition: "La communauté musulmane mondiale, unie par la foi, sans distinction de race, de nationalité ou de statut social." },
+            { term: "وضوء", transliteration: "Wudu", definition: "Les ablutions rituelles effectuées avant la prière ou d'autres actes d'adoration. Consiste à laver certaines parties du corps." },
+            { term: "زكاة", transliteration: "Zakat", definition: "L'aumône purificatrice obligatoire, l'un des cinq piliers de l'Islam. Un pourcentage défini de la richesse d'un musulman est donné aux pauvres et nécessiteux." },
+        ];
+        
+        const glossaryGrid = document.getElementById('glossary-grid');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('no-results');
+        const alphabetFilter = document.getElementById('alphabet-filter');
+        const backToTopButton = document.getElementById('back-to-top');
+
+        glossaryTerms.sort((a, b) => a.transliteration.localeCompare(b.transliteration));
+
+        const createTermCard = (term, index) => {
+            const firstLetter = term.transliteration.charAt(0).toLowerCase();
+            const isFirstOfLetter = !document.getElementById(`term-${firstLetter}`);
+            const idAttribute = isFirstOfLetter ? `id="term-${firstLetter}"` : '';
+            return `
+                <div class="term-card glass-card p-6 rounded-2xl" ${idAttribute} style="animation-delay: ${index * 40}ms">
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="text-2xl font-semibold" style="color: var(--accent-dark)">${term.transliteration}</h2>
+                        <p class="arabic-term text-4xl">${term.term}</p>
+                    </div>
+                    <p class="leading-relaxed font-light secondary-text">${term.definition}</p>
+                </div>`;
+        };
+        const displayTerms = (terms) => {
+            glossaryGrid.innerHTML = '';
+            if (terms.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                let cardHtml = '';
+                terms.forEach((term, index) => { cardHtml += createTermCard(term, index); });
+                glossaryGrid.innerHTML = cardHtml;
+            }
+        };
+        const createAlphabetFilter = () => {
+            alphabetFilter.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(letter => {
+                const button = document.createElement('a');
+                button.href = `#term-${letter.toLowerCase()}`;
+                button.textContent = letter;
+                button.className = 'px-3 py-1 text-sm glass-card rounded-lg hover:bg-[var(--accent)] hover:text-white transition-all duration-200 shadow-sm font-medium';
+                button.onclick = (e) => {
+                    e.preventDefault();
+                    const targetElement = document.getElementById(`term-${letter.toLowerCase()}`);
+                    if (targetElement) {
+                        window.scrollTo({ top: targetElement.offsetTop - 100, behavior: 'smooth' });
+                    }
+                };
+                alphabetFilter.appendChild(button);
+            });
+        };
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredTerms = glossaryTerms.filter(term => 
+                term.transliteration.toLowerCase().includes(searchTerm) || 
+                term.definition.toLowerCase().includes(searchTerm) || 
+                term.term.toLowerCase().includes(searchTerm));
+            displayTerms(filteredTerms);
+        });
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'block';
+                requestAnimationFrame(() => { backToTopButton.style.opacity = '1'; });
+            } else {
+                backToTopButton.style.opacity = '0';
+                setTimeout(() => { if (window.pageYOffset <= 300) backToTopButton.style.display = 'none'; }, 300);
+            }
+        });
+        backToTopButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // Initial Display
+        displayTerms(glossaryTerms);
+        createAlphabetFilter();
+    </script>
+</body>
+</html>
+
